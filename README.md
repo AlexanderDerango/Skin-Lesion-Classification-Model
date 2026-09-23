@@ -20,9 +20,9 @@ The trained model classifies images into seven lesion categories from the HAM100
 
 ## Dataset
 
-The project uses the **HAM10000 (Human Against Machine with 10000 training images)** dataset from Kaggle.
+The project uses the **HAM10000 (Human Against Machine with 10000 training images)** dataset from Kaggle: https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000 
 
-The dataset contains **10,015 dermatoscopic images** of pigmented skin lesions across seven diagnostic categories.
+The dataset contains **10,015 dermatoscopic images** of skin lesions across seven diagnostic categories.
 
 ### Classes
 
@@ -48,25 +48,6 @@ The dataset also contains metadata including:
 
 The dataset contains multiple diagnostic verification methods, including histopathology.
 
-## Exploratory Data Analysis
-
-Exploratory analysis was performed to understand the dataset and identify potential class imbalance.
-
-The analysis included:
-
-* Class distribution
-* Age distribution
-* Sex distribution
-* Metadata correlations
-* Example lesion images
-* Training-set class balance
-
-A major observation was the strong imbalance between lesion classes. **Melanocytic nevi (`nv`) represents the dominant class**, while several other classes have substantially fewer examples.
-
-This imbalance affects model performance because overall accuracy can be influenced by the majority class.
-
-The project also examined the relationship between age and the missing-age indicator as part of the metadata analysis.
-
 ## Data Preprocessing
 
 ### Metadata Processing
@@ -76,12 +57,6 @@ Missing age values were handled by:
 1. Creating an `age_missing` indicator feature.
 2. Replacing missing age values with the median age.
 
-```python
-df['age_missing'] = df['age'].isna().astype(int)
-
-median_age = df['age'].median()
-df['age'] = df['age'].fillna(median_age)
-```
 
 The model therefore receives two metadata features:
 
@@ -110,19 +85,6 @@ Images were processed using the following transformations:
 * Normalize using ImageNet mean and standard deviation
 
 Training images also received random horizontal flipping to introduce additional variation.
-
-```python
-train_transform = transforms.Compose([
-    transforms.Resize(256),
-    transforms.CenterCrop(224),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]
-    )
-])
-```
 
 ## Model Architecture
 
@@ -162,27 +124,6 @@ Rather than relying only on the image, the model combines visual features with p
                                    ▼
                          7 Lesion Categories
 ```
-
-### Image Branch
-
-The image branch contains three convolutional blocks:
-
-* Conv2D: 3 → 32 channels
-* ReLU
-* Max Pooling
-* Conv2D: 32 → 64 channels
-* ReLU
-* Max Pooling
-* Conv2D: 64 → 128 channels
-* ReLU
-* Max Pooling
-
-The extracted image features are then passed through:
-
-* Flatten
-* Fully connected layer: 128 × 28 × 28 → 512
-* ReLU
-* Dropout (0.5)
 
 ### Metadata Branch
 
@@ -297,23 +238,19 @@ The app applies the same evaluation preprocessing used during model development 
 
 ```text
 .
-├── skin_cancer_classifier.ipynb
-├── app.py
-├── skin_cancer_model.pth
+├── Skin Cancer Classifier Slideshow.pdf
+├── Skin_Cancer_Notebook.ipynb
 ├── requirements.txt
 └── README.md
 ```
 
 ### Files
 
-**`skin_cancer_classifier.ipynb`**
+**`Skin_Cancer_Notebook.ipynb`**
 Google Colab notebook containing dataset preparation, exploratory data analysis, preprocessing, model development, training, and evaluation.
 
-**`app.py`**
-Streamlit application for uploading dermoscopic images and generating predictions.
-
-**`skin_cancer_model.pth`**
-Saved PyTorch model weights.
+**`Skin Cancer Classifier Slideshow.pdf**
+Slideshow presented at MLSN Showcase.
 
 **`requirements.txt`**
 Python dependencies required to run the project.
